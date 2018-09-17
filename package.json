@@ -1,0 +1,19 @@
+{
+  "name": "scorebot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "dotenv": "^6.0.0",
+    "moment": "^2.22.2",
+    "request": "^2.88.0",
+    "sqlite3": "^4.0.2"
+  }
+}
