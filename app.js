@@ -5,8 +5,8 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./data.db');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
-let timer = 0;
 let on = false;
+let queue = [];
 
 bot.on('ready', () => {
   // EST is -5 hours from UTC
@@ -53,20 +53,27 @@ bot.login(process.env.token);
 
 
 function readDB () {
-  let query = 'SELECT scoreID, description, type, team, logo, players, displayed FROM scores'
-  db.all(query, [], (err, rows) => {
-    if (err) throw err;
-    rows.forEach(row => {
-      if (row.displayed === 'false') {
-        updateDB(row);
-        setTimeout(() => {
-          bot.channels.find(val => val.name === process.env.channel).send(createEmbed(row));
-        }, timer);
-        timer += 1100;
-      }
-    });
+  //let query = 'SELECT scoreID, description, type, team, logo, players, displayed FROM scores'
+  let query = `SELECT * FROM scores WHERE displayed = ?`;
+  db.each(query, ['false'], (err, row) => {
+    if (err) console.log(err);
+    if (row) {
+      updateDB(row);
+      queue.push(JSON.stringify(row));
+    }
   });
-
+  if (queue) {
+    let newQueue = queue.filter((item, index, array) => {
+      return queue.indexOf(item) === index
+    });
+    newQueue.map(item => {
+      let timer = 0;
+      setTimeout(() => {
+        bot.channels.find(val => val.name === process.env.channel).send(createEmbed(JSON.parse(item)));
+      }, timer);
+      timer += 1000;
+    });    
+  }
 }
 
 function updateDB(item) {
@@ -81,7 +88,8 @@ function createEmbed(item) {
       author: {
         name: `${
           (item.type === 'TD') ? `Touchdown ${item.team}!` : 
-          item.type === 'FG' ? `${item.team} Field Goal` : `${item.team} Safety!`
+          item.type === 'FG' ? `${item.team} Field Goal` : 
+          `${item.team} Safety!`
         }`,
         icon_url: item.logo
       },     
