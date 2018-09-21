@@ -42,13 +42,6 @@ bot.on('ready', () => {
   }, 1000);
 });
 
-bot.on("message", (message) => {
-  if (message.content === "are you up?") {
-    message.channel.send("Yes I am.");
-  }
-});
-
-
 bot.login(process.env.token);
 
 
