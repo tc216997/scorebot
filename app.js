@@ -5,7 +5,7 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./data.db');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
-let on = false;
+let on = true;
 let queue = [];
 
 bot.on('ready', () => {
@@ -55,17 +55,18 @@ function readDB () {
       queue.push(JSON.stringify(row));
     }
   });
-  if (queue) {
+  if (queue.length > 0) {
     let newQueue = queue.filter((item, index, array) => {
       return queue.indexOf(item) === index
     });
+    let timer = 0;
     newQueue.map(item => {
-      let timer = 0;
       setTimeout(() => {
         bot.channels.find(val => val.name === process.env.channel).send(createEmbed(JSON.parse(item)));
       }, timer);
       timer += 1000;
-    });    
+    });
+    queue = [];   
   }
 }
 
