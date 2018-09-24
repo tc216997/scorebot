@@ -5,7 +5,7 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./data.db');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
-let on = true;
+let on = false;
 let queue = [];
 
 bot.on('ready', () => {
@@ -46,7 +46,6 @@ bot.login(process.env.token);
 
 
 function readDB () {
-  //let query = 'SELECT scoreID, description, type, team, logo, players, displayed FROM scores'
   let query = `SELECT * FROM scores WHERE displayed = ?`;
   db.each(query, ['false'], (err, row) => {
     if (err) console.log(err);
