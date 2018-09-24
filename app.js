@@ -5,6 +5,7 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./data.db');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
+const configs = require('./config.js');
 let on = false;
 let queue = [];
 
@@ -42,6 +43,7 @@ bot.on('ready', () => {
   }, 1000);
 });
 
+//TODO: change this to use configs.token in the future
 bot.login(process.env.token);
 
 
@@ -61,6 +63,7 @@ function readDB () {
     let timer = 0;
     newQueue.map(item => {
       setTimeout(() => {
+        //TODO: change process.env.channel to configs.channel in the future
         bot.channels.find(val => val.name === process.env.channel).send(createEmbed(JSON.parse(item)));
       }, timer);
       timer += 1000;
