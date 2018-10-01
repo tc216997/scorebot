@@ -3,10 +3,11 @@ const nflGamesUrl = 'http://www.nfl.com/liveupdate/scores/scores.json';
 const teams = require('./teams.json');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./data.db');
+const moment = require('moment');
 const gameCenter = {}
 
 db.serialize(() => {
-  db.run('CREATE TABLE IF NOT EXISTS scores (scoreID INTEGER PRIMARY KEY UNIQUE, description STRING, type STRING, team STRING, logo STRING, players STRING, displayed STRING)'
+  db.run('CREATE TABLE IF NOT EXISTS scores (scoreID INTEGER PRIMARY KEY UNIQUE, date STRING, description STRING, type STRING, team STRING, logo STRING, players STRING, displayed STRING)'
   );
 });
 
@@ -20,8 +21,13 @@ gameCenter.getScores = () => {
       let timer = 0;
       gameNumbers = Object.keys(games);
       gameNumbers.map(id => {
-        if (games[id].clock !== null && games[id].qtr !== "Pregame") {
-          getPlays(id);
+        let gameDate = id.slice(0, id.length-2);
+        let date = moment().utcOffset(-480).format('YYYYMMDD');
+        // this ensures only fetch games that are on the same date
+        if (gameDate === date) {
+          if (games[id].clock !== null && games[id].qtr !== "Pregame") {
+            getPlays(id, date);
+          }
         }
       });
     }
@@ -29,7 +35,7 @@ gameCenter.getScores = () => {
 
 }
 
-function getPlays(gameId) {
+function getPlays(gameId, gameDate) {
   let url = `http://www.nfl.com/liveupdate/game-center/${gameId}/${gameId}_gtd.json`;
 
   request(url, (err, response, json) => {;
@@ -54,7 +60,7 @@ function getPlays(gameId) {
   
         let players = JSON.stringify(scoring[id].players);
         let displayed = 'false'
-        db.run('INSERT INTO scores VALUES (?, ?, ?, ?, ?, ?, ?)', [gameId+id, description, type, team, logo, players, displayed], (err) => {
+        db.run('INSERT INTO scores VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [gameId+id, gameDate, description, type, team, logo, players, displayed], (err) => {
           if (err && err.code !== 'SQLITE_CONSTRAINT') { console.log(err)} 
         });
       });      

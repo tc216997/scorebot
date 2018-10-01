@@ -52,8 +52,11 @@ function readDB () {
   db.each(query, ['false'], (err, row) => {
     if (err) console.log(err);
     if (row) {
+      let todayDate = moment().utcOffset(-480).format('YYYYMMDD');      
       updateDB(row);
-      queue.push(JSON.stringify(row));
+      if (todayDate === row.date) {
+        queue.push(JSON.stringify(row));
+      }
     }
   });
   if (queue.length > 0) {
