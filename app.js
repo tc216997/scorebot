@@ -6,7 +6,7 @@ const db = new sqlite3.Database('./data.db');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
 const configs = require('./config.js');
-let on = false;
+let on = true;
 let queue = [];
 
 bot.on('ready', () => {
@@ -77,7 +77,7 @@ function readDB () {
 
 function updateDB(item) {
   db.run(`UPDATE scores SET displayed = ? WHERE scoreID = ${item.scoreID}`, ['true'], (err) => {
-    if (err) console.log(err)
+    if (err) console.log(`Error occured in updateDB function ${err}`)
   });
 }
 

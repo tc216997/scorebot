@@ -61,7 +61,7 @@ function getPlays(gameId, gameDate) {
         let players = JSON.stringify(scoring[id].players);
         let displayed = 'false'
         db.run('INSERT INTO scores VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [gameId+id, gameDate, description, type, team, logo, players, displayed], (err) => {
-          if (err && err.code !== 'SQLITE_CONSTRAINT') { console.log(err)} 
+          if (err && err.code !== 'SQLITE_CONSTRAINT') { console.log(`Error occured in getPlays function ${err}`)} 
         });
       });      
     }
