@@ -38,7 +38,6 @@ bot.on('ready', () => {
 
   setInterval(() => {
     if (on) {
-      console.log(moment().utcOffset(-480).format('YYYYMMDD'))
       readDB();
     }
   }, 1000);
@@ -62,11 +61,8 @@ function readDB () {
 
   });
   if (queue.length > 0) {
-    let newQueue = queue.filter((item, index) => {
-      return queue.indexOf(item) === index
-    });
     let timer = 0;
-    newQueue.map(item => {
+    queue.map(item => {
       setTimeout(() => {
         //TODO: change process.env.channel to configs.channel in the future
         bot.channels.find(val => val.name === process.env.channel).send(createEmbed(JSON.parse(item)));
