@@ -6,7 +6,7 @@ const db = new sqlite3.Database('./data.db');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
 const configs = require('./config.js');
-let on = false;
+let on = true;
 let queue = [];
 
 bot.on('ready', () => {
@@ -38,6 +38,7 @@ bot.on('ready', () => {
 
   setInterval(() => {
     if (on) {
+      console.log(moment().utcOffset(-480).format('YYYYMMDD'))
       readDB();
     }
   }, 1000);
@@ -48,19 +49,20 @@ bot.login(process.env.token);
 
 
 function readDB () {
+  let todayDate = moment().utcOffset(-480).format('YYYYMMDD');
   let query = `SELECT * FROM scores WHERE displayed = ?`;
   db.each(query, ['false'], (err, row) => {
     if (err) console.log(err);
-    if (row) {
-      let todayDate = moment().utcOffset(-480).format('YYYYMMDD');      
+    if (row) {   
       updateDB(row);
       if (todayDate === row.date) {
         queue.push(JSON.stringify(row));
       }
     }
+
   });
   if (queue.length > 0) {
-    let newQueue = queue.filter((item, index, array) => {
+    let newQueue = queue.filter((item, index) => {
       return queue.indexOf(item) === index
     });
     let timer = 0;
