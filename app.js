@@ -6,7 +6,7 @@ const db = new sqlite3.Database('./data.db');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
 const configs = require('./config.js');
-let on = true;
+let on = false;
 let queue = [];
 
 bot.on('ready', () => {
@@ -53,8 +53,8 @@ function readDB () {
   db.each(query, ['false'], (err, row) => {
     if (err) console.log(err);
     if (row) {   
-      updateDB(row);
-      if (todayDate === row.date) {
+      if (todayDate == row.date) {
+        updateDB(row);
         queue.push(JSON.stringify(row));
       }
     }
