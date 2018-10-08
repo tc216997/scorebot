@@ -1,4 +1,3 @@
-require('dotenv').config();
 const Discord = require('discord.js');;
 const bot = new Discord.Client();
 const sqlite3 = require('sqlite3').verbose();
@@ -44,7 +43,7 @@ bot.on('ready', () => {
 });
 
 //TODO: change this to use configs.token in the future
-bot.login(process.env.token);
+bot.login(configs.token);
 
 
 function readDB () {
@@ -62,10 +61,11 @@ function readDB () {
   });
   if (queue.length > 0) {
     let timer = 0;
+    queue = uniq(queue);
     queue.map(item => {
       setTimeout(() => {
         //TODO: change process.env.channel to configs.channel in the future
-        bot.channels.find(val => val.name === process.env.channel).send(createEmbed(JSON.parse(item)));
+        bot.channels.find(val => val.name === configs.channel).send(createEmbed(JSON.parse(item)));
       }, timer);
       timer += 1000;
     });
@@ -95,4 +95,11 @@ function createEmbed(item) {
     },
   };
   return embed  
+}
+
+function uniq(arr) {
+  var seen = {};
+  return arr.filter((item) => {
+      return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+  });
 }
