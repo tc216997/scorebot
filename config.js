@@ -1,6 +1,6 @@
 let config = {};
 
-config.token = 'MzMzMjU3MzYzMTc3ODY1MjE3.Dg1Mtw.n0ncRaZqD0WcaNZWrXEr-iuZgB4';
+config.token = 'NDg5MDEzNzU4NjIzMDg4NjQx.Dp2gsg.3h0ojpMii7UaukFcZLCBGp3hEh0';
 config.channel = 'scores';
 
 module.exports = config;
