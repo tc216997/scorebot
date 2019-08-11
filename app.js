@@ -25,7 +25,9 @@ bot.on('ready', () => {
   //preseason game time
   // start: Friday, 00:20  end = Friday, 04:30
   let tnf = {start:'Thursday, 22:00', end:'Tuesday, 04:00'}
-
+  let snf = {start:'Thursday, 22:00', end:'Tuesday, 04:00'}
+  let mnf = {start:'Thursday, 22:00', end:'Tuesday, 04:00'}
+  
   setInterval(() => {
     let time = moment().utc().format('dddd, HH:mm')
     let onTime = (time === tnf.start) || (time === snf.start) || (time === mnf.start);
