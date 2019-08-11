@@ -23,7 +23,7 @@ gameCenter.getScores = () => {
         let gameDate = id.slice(0, id.length-2);
         let date = moment().utcOffset(-480).format('YYYYMMDD');
         // this ensures only fetch games that are on the same date
-        if (gameDate) {
+        if (gameDate === date) {
           if (games[id].clock !== null && games[id].qtr !== "Pregame") {
             getPlays(id, date);
           }
