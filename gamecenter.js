@@ -18,13 +18,12 @@ gameCenter.getScores = () => {
     if (err) console.log(`Error at getScores function \n${err}`)
     if (response.statusCode === 200 && checkString(json)) {
       let games = JSON.parse(json);
-      let timer = 0;
       gameNumbers = Object.keys(games);
       gameNumbers.map(id => {
         let gameDate = id.slice(0, id.length-2);
         let date = moment().utcOffset(-480).format('YYYYMMDD');
         // this ensures only fetch games that are on the same date
-        if (gameDate === date) {
+        if (gameDate) {
           if (games[id].clock !== null && games[id].qtr !== "Pregame") {
             getPlays(id, date);
           }

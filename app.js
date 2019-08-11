@@ -5,7 +5,7 @@ const db = new sqlite3.Database('./data.db');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
 const configs = require('./config.js');
-let on = false;
+let on = true;
 let queue = [];
 
 bot.on('ready', () => {
