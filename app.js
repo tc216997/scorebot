@@ -13,20 +13,14 @@ bot.on('ready', () => {
   // gametime for tnf is 820 est, snf at 1 est, and monday 815
   // utc time for tnf is 1220 am utc friday, snf games are 5pm utc sunday, monday games are 1215am utc tuesday
 
-  /*
+
                   // start: Friday, 00:20  end = Friday, 04:30
   let tnf = {start:'Friday, 00:20', end:'Friday, 04:30'}
                   //start: Sunday, 1700  end = Monday, 05:00
   let snf = {start:'Sunday, 17:00', end:'Monday, 04:30'}
                   // start: Tuesday, 00:15  end = Tuesday, 04:30
   let mnf = {start:'Tuesday, 00:15', end:'Tuesday, 04:30'}
-  */
 
-  //preseason game time
-  // start: Friday, 00:20  end = Friday, 04:30
-  let tnf = {start:'Thursday, 22:00', end:'Tuesday, 04:00'}
-  let snf = {start:'Thursday, 22:00', end:'Tuesday, 04:00'}
-  let mnf = {start:'Thursday, 22:00', end:'Tuesday, 04:00'}
   
   setInterval(() => {
     let time = moment().utc().format('dddd, HH:mm')

@@ -2,10 +2,12 @@ const request = require('request');
 const nflGamesUrl = 'http://www.nfl.com/liveupdate/scores/scores.json';
 const teams = require('./teams.json');
 const sqlite3 = require('sqlite3').verbose();
+// initialize db
 const db = new sqlite3.Database('./data.db');
 const moment = require('moment');
 const gameCenter = {}
 
+// create table
 db.serialize(() => {
   db.run('CREATE TABLE IF NOT EXISTS scores (scoreID INTEGER PRIMARY KEY UNIQUE, date STRING, description STRING, type STRING, team STRING, logo STRING, players STRING, displayed STRING)'
   );
@@ -58,7 +60,9 @@ function getPlays(gameId, gameDate) {
         }
   
         let players = JSON.stringify(scoring[id].players);
-        let displayed = 'false'
+        let displayed = 'false';
+
+        // insert into db
         db.run('INSERT INTO scores VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [gameId+id, gameDate, description, type, team, logo, players, displayed], (err) => {
           if (err && err.code !== 'SQLITE_CONSTRAINT') { console.log(`Error occured in getPlays function ${err}`)} 
         });
