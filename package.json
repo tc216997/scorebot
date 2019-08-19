@@ -12,8 +12,11 @@
   "dependencies": {
     "discord.js": "^11.4.2",
     "dotenv": "^6.0.0",
+    "knex": "^0.19.2",
     "moment": "^2.22.2",
+    "objection": "^1.6.9",
+    "pg": "^7.12.1",
     "request": "^2.88.0",
-    "sqlite3": "^4.0.2"
+    "sqlite3": "^4.1.0"
   }
 }
