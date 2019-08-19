@@ -44,13 +44,15 @@ bot.on('ready', () => {
   }, 1000);
 });
 
-//TODO: change this to use configs.token in the future
+
 bot.login(configs.token);
 
 
 function readDB () {
   let todayDate = moment().utcOffset(-480).format('YYYYMMDD');
+  // set up the query
   let query = `SELECT * FROM scores WHERE displayed = ?`;
+  // check if theres a dupe query, if not, update the db
   db.each(query, ['false'], (err, row) => {
     if (err) console.log(err);
     if (row) {   
@@ -66,7 +68,6 @@ function readDB () {
     queue = uniq(queue);
     queue.map(item => {
       setTimeout(() => {
-        //TODO: change process.env.channel to configs.channel in the future
         bot.channels.find(val => val.name === configs.channel).send(createEmbed(JSON.parse(item)));
       }, timer);
       timer += 1000;
@@ -75,6 +76,7 @@ function readDB () {
   }
 }
 
+// if the score were posted, update the value to true
 function updateDB(item) {
   db.run(`UPDATE scores SET displayed = ? WHERE scoreID = ${item.scoreID}`, ['true'], (err) => {
     if (err) console.log(`Error occured in updateDB function ${err}`)
