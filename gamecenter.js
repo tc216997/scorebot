@@ -1,17 +1,14 @@
+require('dotenv').config({path: './.env'});
+
 const request = require('request');
 const nflGamesUrl = 'http://www.nfl.com/liveupdate/scores/scores.json';
 const teams = require('./teams.json');
-const sqlite3 = require('sqlite3').verbose();
-// initialize db
-const db = new sqlite3.Database('./data.db');
 const moment = require('moment');
+const Knex = require('knex');
+const knexConfig = require('./knexfile');
 const gameCenter = {}
-
-// create table
-db.serialize(() => {
-  db.run('CREATE TABLE IF NOT EXISTS scores (scoreID INTEGER PRIMARY KEY UNIQUE, date STRING, description STRING, type STRING, team STRING, logo STRING, players STRING, displayed STRING)'
-  );
-});
+//initialize knex
+const knex = Knex(knexConfig);
 
 // one time to get game ids for the week, preferably weds
 gameCenter.getScores = () => {
@@ -33,7 +30,6 @@ gameCenter.getScores = () => {
       });
     }
   });
-
 }
 
 function getPlays(gameId, gameDate) {
@@ -58,14 +54,28 @@ function getPlays(gameId, gameDate) {
           team = teams[scoring[id].team].name;
           logo = teams[scoring[id].team].logo;
         }
-  
-        let players = JSON.stringify(scoring[id].players);
-        let displayed = 'false';
 
-        // insert into db
-        db.run('INSERT INTO scores VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [gameId+id, gameDate, description, type, team, logo, players, displayed], (err) => {
-          if (err && err.code !== 'SQLITE_CONSTRAINT') { console.log(`Error occured in getPlays function ${err}`)} 
-        });
+        let players = JSON.stringify(scoring[id].players);
+        let published = 'false';
+        
+        knex.insert({
+          scoreID: gameId+id,
+          date: `${gameDate}`,
+          description: `${description}`,
+          type: `${type}`,
+          team: `${team}`, 
+          logo: `${logo}`,
+          players: `${players}`,
+          published: `${published}`,
+        })
+        .then(() => {
+          console.log('data inserted')
+        })
+        .catch(e => {
+          console.log('problem at getPlays insert')
+          console.log(e)
+        })
+
       });      
     }
   });

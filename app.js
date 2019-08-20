@@ -1,18 +1,24 @@
+require('dotenv').config({path: './.env'});
+
 const Discord = require('discord.js');;
 const bot = new Discord.Client();
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./data.db');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
-const configs = require('./config.js');
-let on = false;
+const knexConfig = require('./knexfile.js')
+const Knex = require('knex');
+
+//initial knex
+const knex = Knex(knexConfig);
+
+
+let on = true;
 let queue = [];
+
 
 bot.on('ready', () => {
   // EST is -5 hours from UTC
   // gametime for tnf is 820 est, snf at 1 est, and monday 815
   // utc time for tnf is 1220 am utc friday, snf games are 5pm utc sunday, monday games are 1215am utc tuesday
-
 
                   // start: Friday, 00:20  end = Friday, 04:30
   let tnf = {start:'Friday, 00:20', end:'Friday, 04:30'}
@@ -45,30 +51,34 @@ bot.on('ready', () => {
 });
 
 
-bot.login(configs.token);
+bot.login(process.env.BOT_TOKEN);
 
 
 function readDB () {
   let todayDate = moment().utcOffset(-480).format('YYYYMMDD');
-  // set up the query
-  let query = `SELECT * FROM scores WHERE displayed = ?`;
-  // check if theres a dupe query, if not, update the db
-  db.each(query, ['false'], (err, row) => {
-    if (err) console.log(err);
-    if (row) {   
-      if (todayDate == row.date) {
-        updateDB(row);
-        queue.push(JSON.stringify(row));
-      }
-    }
 
-  });
+  knex('plays')
+    .where({published:'false'})
+    .then(rows => {
+      rows.map(row => {
+        console.log(row)
+        if (todayDate === row.date) {
+          updateDB(row.scoreID)
+          queue.push(JSON.stringify(row))
+        }
+      })
+    })
+    .catch(e => {
+      console.log('problem at readDB query')
+      console.log(e)
+    })
+
   if (queue.length > 0) {
     let timer = 0;
     queue = uniq(queue);
     queue.map(item => {
       setTimeout(() => {
-        bot.channels.find(val => val.name === configs.channel).send(createEmbed(JSON.parse(item)));
+        bot.channels.find(val => val.name === process.env.CHANNEL).send(createEmbed(JSON.parse(item)));
       }, timer);
       timer += 1000;
     });
@@ -78,9 +88,18 @@ function readDB () {
 
 // if the score were posted, update the value to true
 function updateDB(item) {
-  db.run(`UPDATE scores SET displayed = ? WHERE scoreID = ${item.scoreID}`, ['true'], (err) => {
-    if (err) console.log(`Error occured in updateDB function ${err}`)
-  });
+  knex('plays')
+    //find id = item.scoreID
+    .where({id:item.scoreID})
+    // change published to true
+    .update({published:'true'})
+    .then( () => {
+      console.log('updated published: to true')
+    })
+    .catch(e => {
+      console.log('problem at updateDB')
+      console.log(e)
+    })
 }
 
 function createEmbed(item) {
