@@ -1,14 +1,14 @@
 require('dotenv').config();
 const Discord = require('discord.js');;
 const bot = new Discord.Client();
+const { Model } = require('objection');
 const gameCenter = require('./gamecenter.js')
 const moment = require('moment');
 const knexConfig = require('./knexfile.js')
 const Knex = require('knex');
-
 //initial knex
 const knex = Knex(knexConfig);
-
+Model.knex(knex)
 
 let on = true;
 let queue = [];
