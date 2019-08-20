@@ -1,5 +1,4 @@
-require('dotenv').config({path: './.env'});
-
+require('dotenv').config();
 const Discord = require('discord.js');;
 const bot = new Discord.Client();
 const gameCenter = require('./gamecenter.js')
@@ -57,6 +56,7 @@ bot.login(process.env.BOT_TOKEN);
 function readDB () {
   let todayDate = moment().utcOffset(-480).format('YYYYMMDD');
 
+  // check plays
   knex('plays')
     .where({published:'false'})
     .then(rows => {

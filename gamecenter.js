@@ -1,4 +1,4 @@
-require('dotenv').config({path: './.env'});
+require('dotenv').config();
 
 const request = require('request');
 const nflGamesUrl = 'http://www.nfl.com/liveupdate/scores/scores.json';

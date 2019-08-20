@@ -10,14 +10,12 @@ exports.up = function(knex) {
       table.string('logo')
       table.string('players')
       table.string('published')
-    }).then(() => {
-      console.log('scores table initialized')
     })
   ])  
 };
 
 exports.down = function(knex) {
   return Promise.all([
-    knex.schema.dropTable('scores')
+    knex.schema.dropTable('plays')
   ])
 };
