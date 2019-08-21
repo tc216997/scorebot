@@ -1,7 +1,0 @@
-let config = {};
-
-config.botToken = 'your_bot_token_here';
-config.scoringChannel = 'name_of_channel_you_want_the_bot_to_post_in';
-
-
-module.exports = config;
