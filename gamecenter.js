@@ -4,11 +4,13 @@ const request = require('request');
 const nflGamesUrl = 'http://www.nfl.com/liveupdate/scores/scores.json';
 const teams = require('./teams.json');
 const moment = require('moment');
-const Knex = require('knex');
-const knexConfig = require('./knexfile');
+const { Model } = require('objection');
 const gameCenter = {}
-//initialize knex
+const knexConfig = require('./knexfile.js')
+const Knex = require('knex');
+//initial knex
 const knex = Knex(knexConfig);
+Model.knex(knex)
 
 // one time to get game ids for the week, preferably weds
 gameCenter.getScores = () => {
@@ -43,38 +45,46 @@ function getPlays(gameId, gameDate) {
       //scoring id 
       let scoring = game[gameId].scrsummary;
       scoringIds.map(id => {
-        let description = scoring[id].desc;
-        let type = scoring[id].type;
-        let team = ''
-        let logo = ''
+        let scoreID = gameId + id;
+        let obj = {};
+        let team = '';
+        let teamSymbol = '';
+        let logo = '';
         if (scoring[id].team === 'LA') {
           team = teams['LAR'].name
+          teamSymbol = 'LAR'
           logo = teams['LAR'].logo
         } else {
           team = teams[scoring[id].team].name;
+          teamSymbol = scoring[id].team
           logo = teams[scoring[id].team].logo;
         }
-
-        let players = JSON.stringify(scoring[id].players);
-        let published = 'false';
+        obj.scoreID = gameId + id;
+        obj.date = gameDate;
+        obj.description = scoring[id].desc;
+        obj.type = scoring[id].type;
+        obj.team = team
+        obj.teamSymbol = teamSymbol;
+        obj.logo = logo
+        obj.players = JSON.stringify(scoring[id].players);
+        obj.published = 'false';
         
-        knex.insert({
-          scoreID: gameId+id,
-          date: `${gameDate}`,
-          description: `${description}`,
-          type: `${type}`,
-          team: `${team}`, 
-          logo: `${logo}`,
-          players: `${players}`,
-          published: `${published}`,
-        })
-        .then(() => {
-          console.log('data inserted')
-        })
-        .catch(e => {
-          console.log('problem at getPlays insert')
-          console.log(e)
-        })
+        knex('plays')
+          .select()
+          .where('scoreID', scoreID)
+          .then(rows => {
+            if (rows.length === 0) {
+              knex('plays')
+                .insert(obj)
+                .then(() => {
+                  //console.log('data inserted!')
+                })
+            }
+          })
+          .catch(e => {
+            console.log('problem at getPlays insert')
+            console.log(e)
+          })
 
       });      
     }

@@ -10,7 +10,7 @@ const Knex = require('knex');
 const knex = Knex(knexConfig);
 Model.knex(knex)
 
-let on = false;
+let on = true;
 let queue = [];
 
 
@@ -61,7 +61,6 @@ function readDB () {
     .where({published:'false'})
     .then(rows => {
       rows.map(row => {
-        console.log(row)
         if (todayDate === row.date) {
           updateDB(row.scoreID)
           queue.push(JSON.stringify(row))
@@ -90,16 +89,19 @@ function readDB () {
 function updateDB(item) {
   knex('plays')
     //find id = item.scoreID
-    .where({id:item.scoreID})
+    .where('published', '=', 'false')
     // change published to true
-    .update({published:'true'})
+    .update({
+      published:'true'
+    })
     .then( () => {
-      console.log('updated published: to true')
+      //console.log('updated')
     })
     .catch(e => {
       console.log('problem at updateDB')
       console.log(e)
     })
+
 }
 
 function createEmbed(item) {
