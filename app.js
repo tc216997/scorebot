@@ -10,7 +10,7 @@ const Knex = require('knex');
 const knex = Knex(knexConfig);
 Model.knex(knex)
 
-let on = true;
+let on = false;
 let queue = [];
 
 
